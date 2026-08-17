@@ -1,7 +1,6 @@
 ---
 name: circuit-design
 description: Design electronic circuits, schematics, custom PCBs, power supplies, motor drivers, battery charging, and wiring for DIY projects. ALWAYS use this skill when a project involves any electronics beyond plugging modules together — custom PCBs, PCB-as-chassis builds, battery-powered devices, motor control, sensor interfacing, or when the user mentions schematic, PCB, KiCad, soldering, or "custom board". Also use for reviewing/debugging existing circuits.
-</description>
 ---
 
 # Circuit Design
