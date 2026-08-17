@@ -28,7 +28,8 @@ Run these checks explicitly and show the math in the blueprint:
 - **Power budget**: For every load, list nominal AND stall/peak current. Verify: driver continuous rating ≥ stall current, battery C-rating × capacity ≥ total peak draw, regulator dissipation at max load. Compute runtime = capacity ÷ average draw and compare to target.
 - **Weight budget** (for anything that moves/flies): total mass vs. motor thrust/torque through the gear ratio. Check wheel torque at stall vs. required.
 - **Thermal sanity**: linear regulators dropping >2V at >100mA need a dissipation check.
-- **Manufacturability**: every printed part checked against printer min feature size (see WORKSHOP.md); every PCB footprint checked against user's soldering capability (hand-solder vs. hotplate vs. "order assembled").
+- **Fabrication routing**: every mechanical part assigned a route — hand-fab (acrylic/PVC/aluminum, the default) vs. outsourced 3D print (complex geometry only) vs. buy-standard-hardware — per the mechanical-design skill's routing table. Every PCB footprint checked against user's soldering capability (see WORKSHOP.md).
+- **Procurement feasibility**: the user buys components per-project. Every BOM line needs supplier + price estimate + lead time; total cost checked against budget comfort (WORKSHOP.md); longest lead time flagged as the critical path.
 - **Skill/tool gate**: flag any step requiring tools or techniques the user doesn't have (per WORKSHOP.md) and propose alternatives.
 
 If any check FAILS: redesign at the architecture level and re-run the gate. Do not proceed with a failing design and do not silently relax a requirement — surface the tradeoff to the user.
@@ -37,7 +38,7 @@ If any check FAILS: redesign at the architecture level and re-run the gate. Do n
 
 For every major design decision (drive method, steering method, radio protocol, battery chemistry, MCU choice), present **2 options minimum** with pros/cons and a recommendation. The user decides. Decisions get recorded in `blueprint.md` under `## Decisions` with one-line rationale (this is the build's ADR log — also feeds YouTube scripts).
 
-Prefer components already in the user's inventory (WORKSHOP.md) — only spec new purchases when inventory genuinely can't do the job, and say why.
+Prefer parts from the user's standing stock and salvage sources (WORKSHOP.md) where they exist, but the default assumption is per-project purchasing: optimize for commonly available, well-documented modules from the user's preferred suppliers over exotic parts with long lead times. When two parts are equivalent, pick the one that arrives faster.
 
 ## Phase 3 — Artifacts
 
@@ -46,8 +47,8 @@ Only after Phases 0–2 are complete, generate into `projects/<name>/`:
 | File | Content |
 |---|---|
 | `blueprint.md` | Measurements, feasibility math, decisions, architecture diagram (Mermaid), pin map table |
-| `bom.csv` | ref, part, package/size, qty, have/order, est. price, source link |
-| `mechanical/*.scad` | Parametric OpenSCAD, dimensions as named variables at top, tolerances from WORKSHOP.md. Render-check: `openscad -o /tmp/check.stl file.scad` must succeed |
+| `bom.csv` | ref, part, package/size, qty, supplier, est. price (₹), lead time, order-by stage |
+| `mechanical/` | Per routing: hand-fab parts get 1:1 PDF cutting templates + dimensioned SVG drawings (single datum edge); outsourced parts get parametric `.scad` + STL, render-checked (`openscad -o /tmp/check.stl file.scad` must succeed), batched into one print order with material notes |
 | `firmware/` | Complete sketches (see firmware-embedded skill). Must compile: verify with `arduino-cli compile` if available |
 | `wiring.svg` or Mermaid | Every connection, wire gauge for power paths, connector types |
 | `build-plan.md` | See Phase 4 |
@@ -59,12 +60,13 @@ Pin maps are single-source-of-truth: the table in `blueprint.md` must match `#de
 
 Write `build-plan.md` as ordered stages where **each stage is verifiable before the next begins**, following this progression:
 
-1. Breadboard the core circuit → checkpoint: measured current draw matches budget
-2. Bench-test actuators at target load → checkpoint: stall behavior acceptable
-3. Print and dry-fit mechanical parts → checkpoint: fits measured cavity, gears mesh
+0. **Order long-lead items immediately** (components, 3D print service batch, PCBs if pre-validated) — the plan schedules ordering so nothing blocks a build stage; short-lead and local items can wait
+1. Breadboard the core circuit with parts as they arrive → checkpoint: measured current draw matches budget
+2. Bench-test actuators at target load → checkpoint: stall/torque behavior acceptable
+3. Fabricate hand-fab parts from templates; dry-fit everything including service-printed parts → checkpoint: fits measurements, mechanisms move freely
 4. Perfboard or order PCB (only after breadboard passes)
 5. Integration → checkpoint list (range test, runtime test, thermal touch-test)
-6. Final assembly
+6. Final assembly + finishing
 
 Each checkpoint states: what to measure, expected value, and what to revisit if it fails. Never let the user order PCBs or commit glue/solder before the relevant checkpoint passes.
 
@@ -75,9 +77,13 @@ Each checkpoint states: what to measure, expected value, and what to revisit if 
 - Motor drivers: spec for stall current, not nominal.
 - Flag pinch points, flying-part risks (props, high-RPM), and hot surfaces in `build-plan.md` under `## Safety`.
 
-## Micro-scale reference (small RC conversions)
+## Reference patterns
 
-Common patterns for sub-100mm builds (Hot Wheels class):
+These are worked examples, not the scope — the phases above apply to ANY build
+(robots, tools, fixtures, home automation, props, test gear, full-size RC).
+As projects complete, append new proven patterns here.
+
+### Micro-scale RC conversions (sub-100mm, Hot Wheels class)
 - **PCB-as-chassis**: the board replaces the base plate and carries everything; mounting holes match donor rivet posts.
 - **Drive**: 4mm/6×15mm coreless motors (drone spares), 200–500mA stall on 1S; direct or 1-stage printed spur/worm.
 - **Steering**: (a) coil+magnet actuator on pivoting front axle with spring return — proportional-ish, tiny; (b) fixed axle + differential tank steer — simplest; (c) 1.7g linear servo — only if ≥8mm height available.

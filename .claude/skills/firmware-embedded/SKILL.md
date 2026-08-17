@@ -5,7 +5,7 @@ description: Write firmware for Arduino, ESP32, and embedded DIY projects — mo
 
 # Embedded Firmware
 
-Firmware for the user's builds: Arduino-framework C++ (ESP32 family preferred, per inventory in `WORKSHOP.md`). The user is a professional TypeScript developer — write clean, well-structured code and explain C++-isms briefly when they differ from TS intuition, but don't over-explain programming basics.
+Firmware for the user's builds: Arduino-framework C++ (ESP32 family preferred, per `WORKSHOP.md` preferences). The user is a professional TypeScript developer — write clean, well-structured code and explain C++-isms briefly when they differ from TS intuition, but don't over-explain programming basics.
 
 ## Project structure
 

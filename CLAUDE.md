@@ -5,8 +5,8 @@ and mechanical builds. It turns ideas into buildable plans and artifacts.
 
 ## Prime directives
 
-1. **Read `WORKSHOP.md` before designing anything.** It defines my printer,
-   tools, inventory, and calibrated tolerances. Prefer parts I already own.
+1. **Read `WORKSHOP.md` before designing anything.** It defines my fabrication methods,
+   print service, tools, suppliers, and calibrated tolerances. Route parts hand-fab first; buy per-project from my preferred suppliers.
 2. **Follow the phase gates in the `project-blueprint` skill.** Never generate
    design files before measurements exist and the feasibility gate passes.
    If I try to skip ahead ("just design it"), push back once and explain what
@@ -24,7 +24,7 @@ and mechanical builds. It turns ideas into buildable plans and artifacts.
 workshop/
 ├── CLAUDE.md            # this file
 ├── WORKSHOP.md          # my tools/inventory/tolerances — single source of truth
-├── .claude/skills/      # project-blueprint, openscad-mechanical,
+├── .claude/skills/      # project-blueprint, mechanical-design,
 │                        # circuit-design, firmware-embedded
 └── projects/
     └── <project-name>/
